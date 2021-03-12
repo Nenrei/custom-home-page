@@ -1,0 +1,17 @@
+.websites-list {
+  display: block;
+  float: left;
+
+  width: calc(100% - 300px);
+  padding: 30px;
+  padding-top: 0;
+}
+
+.websites-list h2 {
+  color: #ffffff;
+  border-bottom: 1px solid;
+}
+
+.websites-list__list {
+  display: flex;
+}
