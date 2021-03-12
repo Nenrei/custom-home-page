@@ -5,7 +5,7 @@ import "./twitch.css";
 import { MdAutorenew } from "react-icons/md";
 
 const Twitch = () => {
-  const twitchUserId="xxxxx";
+  const twitchUserId="52383144";
 
   const [loading, setLoading] = useState(true);
   const [liveChannels, setLiveChannels] = useState([]);

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const baseURL = "https://custom-home-page-ef08b-default-rtdb.firebaseio.com";
-const user = "xxxxx";
+const user = "enmanuel";
 
 export const getWebPages = (categoryId) => {
   return axios.get(`${baseURL}/${user}/webCategories/${categoryId}/webSites.json`).then((response) => {
