@@ -1,7 +1,3 @@
-### Parameters
-Change the const **twitchId** in **twitch.js** for your twitch user id.<br>
-Change the const **user** in **services.js** for your name.
-
 ### Local Testing
 `npm i`<br>
 `npm start`
