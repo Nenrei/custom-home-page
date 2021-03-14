@@ -2,16 +2,17 @@
 .current-date {
   font-size: 60px;
 
+  height: 100px;
   margin-bottom: -60px;
   padding-right: 50px;
 
   text-align: right;
 
   color: white;
-}
 
-.current-date__date {
-  font-size: 20px;
+  &__date {
+    font-size: 20px;
 
-  padding-right: 20px;
+    padding-right: 20px;
+  }
 }

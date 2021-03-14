@@ -1,6 +1,12 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
-import { getWebCategories, addWebCategory, removeWebCategory, updateWebCategory } from "../../firebase/services";
-import "./categories-list.css";
+import {
+  getWebCategories,
+  addWebCategory,
+  removeWebCategory,
+  updateWebCategory,
+} from "../../chromestorage/services";
+import "./categories-list.scss";
 import {
   Dialog,
   DialogActions,
@@ -9,14 +15,13 @@ import {
   Button,
 } from "@material-ui/core";
 import WebsiteCategory from "../website-category/website-category";
-import { MdClose, MdModeEdit, MdAdd } from "react-icons/md";
+import { MdAdd } from "react-icons/md";
 
 const CategoriesList = () => {
   const [dialogOpened, setDialogOpened] = useState(false);
   const [categories, setCategories] = useState([]);
   const [newCategoryData, setNewCategoryData] = useState({
-    title: "",
-    webSites: [],
+    title: ""
   });
 
   useEffect(() => {
@@ -37,54 +42,44 @@ const CategoriesList = () => {
     setDialogOpened(true);
   };
 
+  const handleClose = (e) => {
+    e.preventDefault();
+    setDialogOpened(!dialogOpened);
+    setNewCategoryData({
+      title: ""
+    });
+  };
+
   const handleRemove = (e) => {
     e.preventDefault();
 
-    removeWebCategory(newCategoryData.id, getCategories);
+    removeWebCategory(categories, newCategoryData.id, getCategories);
   };
 
   const handleAdd = (e) => {
     e.preventDefault();
 
-    const data = {
-      title: newCategoryData.title,
-      webSites: newCategoryData.webSites,
-    };
-
     if (!newCategoryData.id) {
-      data.webSites = [];
-      addWebCategory(data, getCategories);
+      const data = {
+        title: newCategoryData.title,
+        id: `cat-${new Date().getTime()}`,
+      };
+      addWebCategory(categories, data, getCategories);
     } else {
-      updateWebCategory(data, newCategoryData.id, getCategories);
+      updateWebCategory(categories, newCategoryData, getCategories);
     }
   };
 
-  const handleClose = (e) => {
-    e.preventDefault();
-    setDialogOpened(!dialogOpened);
+  const getCategoriesCallback = (storedCategories) => {
+    setCategories(storedCategories);
     setNewCategoryData({
-      title: "",
-      webSites: [],
+      title: ""
     });
   };
 
   const getCategories = () => {
     setDialogOpened(false);
-    getWebCategories().then((data) => {
-      const fetchedData = [];
-      for (let key in data) {
-        const tempData = { id: key, title: data[key].title, webSites: [] };
-        for (let webSiteKey in data[key].webSites) {
-          tempData.webSites.push({ ...data[key].webSites[webSiteKey], id: webSiteKey });
-        }
-        fetchedData.push(tempData);
-      }
-      setCategories(fetchedData);
-      setNewCategoryData({
-        title: "",
-        webSites: [],
-      });
-    });
+    getWebCategories(getCategoriesCallback);
   };
 
   return (
@@ -92,7 +87,11 @@ const CategoriesList = () => {
       <h2>My Websites</h2>
       <div className="website-category-list">
         {categories.map((category) => (
-          <WebsiteCategory key={category.id} categoryData={category} handleEditCategory={handleEdit}/>
+          <WebsiteCategory
+            key={category.id}
+            categoryData={category}
+            handleEditCategory={handleEdit}
+          />
         ))}
         <div className="website-category-list__category website-category-list__category--add">
           <div className="website-category-list__category__title">
@@ -133,10 +132,22 @@ const CategoriesList = () => {
               Cancel
             </Button>
 
-            {newCategoryData.id && <><Button type="submit" color="primary">Update</Button><Button onClick={handleRemove} color="primary">Remove</Button></>}
-            
-            {!newCategoryData.id && <Button type="submit" color="primary">Add</Button>}
+            {newCategoryData.id && (
+              <>
+                <Button type="submit" color="primary">
+                  Update
+                </Button>
+                <Button onClick={handleRemove} color="primary">
+                  Remove
+                </Button>
+              </>
+            )}
 
+            {!newCategoryData.id && (
+              <Button type="submit" color="primary">
+                Add
+              </Button>
+            )}
           </DialogActions>
         </form>
       </Dialog>

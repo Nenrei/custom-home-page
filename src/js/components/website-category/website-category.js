@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Website from "../website/website";
-import "./website-category.css";
+import "./website-category.scss";
 import {
   getWebPages,
   addWebPage,
   removeWebPage,
   updateWebPage,
-} from "../../firebase/services";
+} from "../../chromestorage/services";
 import {
   Dialog,
   DialogActions,
@@ -25,7 +25,8 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
   });
 
   useEffect(() => {
-    setWebPages(categoryData.webSites);
+    getWebsites();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
@@ -45,22 +46,24 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
   const handleRemove = (e, id) => {
     e.preventDefault();
 
-    removeWebPage(id, categoryData.id, getWebsites);
+    removeWebPage(id, getWebsites);
   };
 
   const handleAdd = (e) => {
     e.preventDefault();
 
     const data = {
+      categoryId: categoryData.id,
       url: newWebPageData.url,
       icon: newWebPageData.icon,
       title: newWebPageData.title,
     };
 
     if (!newWebPageData.id) {
-      addWebPage(data, categoryData.id, getWebsites);
+      data.id =`site-${(new Date()).getTime()}`;
+      addWebPage(data, getWebsites);
     } else {
-      updateWebPage(data, newWebPageData.id, categoryData.id, getWebsites);
+      updateWebPage(newWebPageData, getWebsites);
     }
   };
 
@@ -74,21 +77,20 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
     });
   };
 
+  const getWebsitesCallback = (storedSites) => {
+    setWebPages(storedSites);
+    setNewWebPageData({
+      url: "",
+      icon: "",
+      title: "",
+      id: "",
+    });
+  }
+
   const getWebsites = () => {
     setDialogOpened(false);
-    getWebPages(categoryData.id).then((data) => {
-      const fetchedData = [];
-      for (let key in data) {
-        fetchedData.push({ ...data[key], id: key });
-      }
-      setWebPages(fetchedData);
-      setNewWebPageData({
-        url: "",
-        icon: "",
-        title: "",
-        id: "",
-      });
-    });
+
+    getWebPages(categoryData.id, getWebsitesCallback);
   };
 
   return (
