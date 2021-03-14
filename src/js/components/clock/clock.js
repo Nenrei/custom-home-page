@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Moment from "react-moment";
-import "./clock.css";
+import "./clock.scss";
 
 const Clock = () => {
 

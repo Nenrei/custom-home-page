@@ -1,0 +1,139 @@
+.twitch-live-channels {
+  float: left;
+
+  width: 300px;
+  padding-top: 0;
+
+  color: #ffffff;
+
+  h2 {
+    border-bottom: 1px solid;
+  }
+
+  &__refresh {
+    float: right;
+
+    margin-right: 20px;
+
+    cursor: pointer;
+  }
+
+  &__channel {
+    position: relative;
+    z-index: 3;
+
+    display: inline-flex;
+    overflow: hidden;
+    flex-direction: row;
+
+    width: 270px;
+    margin: 10px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding: 5px;
+
+    cursor: pointer;
+    user-select: none;
+    transition-duration: 0.2s;
+    text-align: center;
+    text-decoration: none;
+
+    color: #ffffff;
+    border-radius: 5px;
+    border-radius: 8px;
+    background-color: #171717;
+    box-shadow: rgb(0 / 30%, 0 / 30%, 0 / 30%) 1px 1px 6px 2px;
+
+    align-items: left;
+    -webkit-box-align: left;
+    -webkit-box-pack: left;
+    justify-content: left;
+
+    &:hover {
+      background-color: #202020;
+    }
+
+    > div {
+      display: inline-flex;
+
+      height: 50px;
+    }
+
+    &__image {
+      position: relative;
+
+      width: 50px;
+      height: 50px;
+
+      border-radius: 50%;
+    }
+
+    &__data {
+      display: flex;
+      flex-direction: column;
+
+      margin-left: 10px;
+
+      > div {
+        display: flex;
+
+        width: 150px;
+      }
+
+      &__name {
+        line-height: 30px;
+
+        overflow: hidden;
+
+        height: 25px;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      &__game {
+        font-size: 0.8em;
+
+        overflow: hidden;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        color: #929292;
+      }
+    }
+
+    &__viewers {
+      position: absolute;
+      top: 19px;
+      right: 6px;
+
+      > div {
+        line-height: 6px;
+
+        position: relative;
+
+        display: inline-block;
+
+        height: 6px;
+      }
+
+      &__circle {
+        width: 6px;
+        margin-right: 3px;
+
+        border-radius: 50%;
+        background-color: rgb(212, 39, 39);
+      }
+
+      &__number {
+        font-size: 0.8em;
+
+        color: #666666;
+      }
+    }
+  }
+}
+
+
+

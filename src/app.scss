@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Alata&display=swap');
+
+* {
+  font-family: 'Alata', sans-serif;
+
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 1.02em;
+
+  background-color: rgb(37, 37, 37);
+}
+
+.MuiFormControlLabel-root {
+  margin-right: 10px !important;
+}
+
+.app-settings {
+  font-size: 2em;
+
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  cursor: pointer;
+
+  color: #ffffff;
+}

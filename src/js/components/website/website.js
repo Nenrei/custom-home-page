@@ -1,5 +1,5 @@
 import React from "react";
-import "./website.css";
+import "./website.scss";
 import { MdClose, MdModeEdit, MdAdd } from "react-icons/md";
 
 const Website = ({
@@ -37,6 +37,7 @@ const Website = ({
               ? `https://www.google.com/s2/favicons?domain=${websiteData.url}`
               : websiteData.icon
           }
+          alt=""
         />
       </a>
     </div>
