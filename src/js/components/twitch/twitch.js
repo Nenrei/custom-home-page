@@ -23,7 +23,7 @@ const Twitch = () => {
   }, [updateTwitch]);
 
   return (
-    showTwitch && (
+    showTwitch ? (
       <div className="twitch-live-channels">
         <h2>
           Twitch Live Channels{" "}
@@ -75,7 +75,7 @@ const Twitch = () => {
           <div className="twitch-live-channels__no-chanels"></div>
         )}
       </div>
-    )
+    ) : <div></div>
   );
 };
 
