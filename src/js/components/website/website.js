@@ -40,6 +40,7 @@ const Website = ({
           alt=""
         />
       </a>
+      <span className="website__title">{websiteData.title}</span>
     </div>
   ) : (
     <div className="website" title="New Website">

@@ -51,17 +51,22 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
 
   const handleAdd = (e) => {
     e.preventDefault();
-
     const data = {
       categoryId: categoryData.id,
       url: newWebPageData.url,
       icon: newWebPageData.icon,
       title: newWebPageData.title,
     };
-
+    
     if (!newWebPageData.id) {
       data.id =`site-${(new Date()).getTime()}`;
-      addWebPage(data, getWebsites);
+      // eslint-disable-next-line no-undef
+      if (chrome && chrome.storage) {
+        addWebPage(data, getWebsites);
+      }else{
+        setWebPages([...webPages, data]);
+        handleClose(e);
+      }
     } else {
       updateWebPage(newWebPageData, getWebsites);
     }

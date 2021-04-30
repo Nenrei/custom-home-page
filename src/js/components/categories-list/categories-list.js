@@ -64,7 +64,13 @@ const CategoriesList = () => {
         title: newCategoryData.title,
         id: `cat-${new Date().getTime()}`,
       };
-      addWebCategory(categories, data, getCategories);
+      // eslint-disable-next-line no-undef
+      if (chrome && chrome.storage) {
+        addWebCategory(categories, data, getCategories);
+      }else{
+        getCategoriesCallback([...categories, data]);
+        handleClose(e);
+      }
     } else {
       updateWebCategory(categories, newCategoryData, getCategories);
     }
