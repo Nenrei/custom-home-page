@@ -2,20 +2,15 @@ import React, { useState, useEffect } from "react";
 import Website from "../website/website";
 import "./website-category.scss";
 import {
-  getWebPages,
-  addWebPage,
-  removeWebPage,
-  updateWebPage,
-} from "../../chromestorage/services";
-import {
   Dialog,
   DialogActions,
   DialogContent,
   TextField,
   Button,
 } from "@material-ui/core";
+import firebase from "../../../firebase";
 
-const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
+const WebsiteCategory = ({ user, categoryData, handleEditCategory }) => {
   const [dialogOpened, setDialogOpened] = useState(false);
   const [webPages, setWebPages] = useState([]);
   const [newWebPageData, setNewWebPageData] = useState({
@@ -25,9 +20,18 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
   });
 
   useEffect(() => {
-    getWebsites();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      const webPages = categoryData.webPages;
+      const newStateWebPages = [];
+      for(let webPage in webPages){
+        newStateWebPages.push({
+          key: webPage,
+          url: webPages[webPage].url,
+          icon: webPages[webPage].icon,
+          title: webPages[webPage].title,
+        });
+      }
+      setWebPages(newStateWebPages);
+  }, [setWebPages, categoryData.webPages]);
 
   const handleChange = (e) => {
     setNewWebPageData({
@@ -36,39 +40,48 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
     });
   };
 
+  const addNewWebPage = (e, webPage) => {
+    const webPageRef = firebase.database().ref(`${user.name}/categories/${categoryData.key}/webPages`);
+    delete webPage.key;
+    webPageRef.push(webPage);
+    handleClose(e);
+  };
+
+  const updateWebPage = (e, webPage) => {
+    const categoryRef = firebase.database().ref(`${user.name}/categories/${categoryData.key}/webPages/${webPage.key}`);
+    categoryRef.update({
+      url: webPage.url,
+      icon: webPage.icon,
+      title: webPage.title
+    });
+    handleClose(e);
+  };
+
+  const deleteWebPage = (webPageKey) => {
+    if(window.confirm("Delete this category?")) {
+      const categoryRef = firebase.database().ref(`${user.name}/categories/${categoryData.key}/webPages/${webPageKey}`);
+      categoryRef.remove();
+    }
+  };
+  
+
   const handleEdit = (e, data) => {
     e.preventDefault();
-
     setNewWebPageData(data);
     setDialogOpened(true);
   };
 
-  const handleRemove = (e, id) => {
+  const handleRemove = (e, key) => {
     e.preventDefault();
-
-    removeWebPage(id, getWebsites);
+    deleteWebPage(key);
   };
 
   const handleAdd = (e) => {
-    e.preventDefault();
-    const data = {
-      categoryId: categoryData.id,
-      url: newWebPageData.url,
-      icon: newWebPageData.icon,
-      title: newWebPageData.title,
-    };
-    
-    if (!newWebPageData.id) {
-      data.id =`site-${(new Date()).getTime()}`;
-      // eslint-disable-next-line no-undef
-      if (chrome && chrome.storage) {
-        addWebPage(data, getWebsites);
-      }else{
-        setWebPages([...webPages, data]);
-        handleClose(e);
-      }
+    e.preventDefault();    
+    if (!newWebPageData.key) {
+      addNewWebPage(e, newWebPageData);
     } else {
-      updateWebPage(newWebPageData, getWebsites);
+      updateWebPage(e, newWebPageData);
     }
   };
 
@@ -80,22 +93,6 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
       icon: "",
       title: "",
     });
-  };
-
-  const getWebsitesCallback = (storedSites) => {
-    setWebPages(storedSites);
-    setNewWebPageData({
-      url: "",
-      icon: "",
-      title: "",
-      id: "",
-    });
-  }
-
-  const getWebsites = () => {
-    setDialogOpened(false);
-
-    getWebPages(categoryData.id, getWebsitesCallback);
   };
 
   return (
@@ -112,7 +109,7 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
         {webPages &&
           webPages.map((web) => (
             <Website
-              key={web.id}
+              key={web.key}
               websiteData={web}
               handleEdit={handleEdit}
               handleRemove={handleRemove}
@@ -159,6 +156,7 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
               value={newWebPageData.icon}
               onChange={handleChange}
               fullWidth
+              required
             />
           </DialogContent>
           <DialogActions>
@@ -166,7 +164,7 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
               Cancel
             </Button>
             <Button type="submit" color="primary">
-              {!newWebPageData.id ? "Add" : "Update"}
+              {!newWebPageData.key ? "Add" : "Update"}
             </Button>
           </DialogActions>
         </form>

@@ -15,7 +15,7 @@ const Website = ({
         className="website__btn website__btn--remove"
         title="Remove"
         onClick={(e) => {
-          handleRemove(e, websiteData.id);
+          handleRemove(e, websiteData.key);
         }}
       >
         <MdClose />
@@ -33,7 +33,7 @@ const Website = ({
         <img
           className="website__icon"
           src={
-            websiteData.icon.length === 0
+            websiteData.icon && websiteData.icon.length === 0
               ? `https://www.google.com/s2/favicons?domain=${websiteData.url}`
               : websiteData.icon
           }

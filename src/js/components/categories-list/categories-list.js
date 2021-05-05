@@ -1,11 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect } from "react";
-import {
-  getWebCategories,
-  addWebCategory,
-  removeWebCategory,
-  updateWebCategory,
-} from "../../chromestorage/services";
+import React, { useState, useContext } from "react";
 import "./categories-list.scss";
 import {
   Dialog,
@@ -16,17 +10,59 @@ import {
 } from "@material-ui/core";
 import WebsiteCategory from "../website-category/website-category";
 import { MdAdd } from "react-icons/md";
+import HomePageSettings from "../config/context";
+import ClassNames from "classnames";
+import UserContext from "../../context/UserContext";
+import firebase from "../../../firebase";
 
-const CategoriesList = () => {
+const CategoriesList = ({categories}) => {
+  const {
+    state: { isTwitchCollapsed, showTwitch },
+  } = useContext(HomePageSettings);
+
   const [dialogOpened, setDialogOpened] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [newCategoryData, setNewCategoryData] = useState({
-    title: ""
+    title: "",
   });
 
-  useEffect(() => {
-    getCategories();
-  }, []);
+  const categoryListClasses = ClassNames({
+    "websites-list": true,
+    "websites-list--extended": !showTwitch || (showTwitch && isTwitchCollapsed),
+  });
+
+  const { state: { user } } = useContext(UserContext);
+
+  const handleClose = (e) => {
+    e.preventDefault();
+    setDialogOpened(!dialogOpened);
+    setNewCategoryData({
+      title: "",
+      webPages: []
+    });
+  };
+
+  const addNewCategory = (e, category) => {
+    const categoriesRef = firebase.database().ref(`${user.name}/categories`);
+    delete category.key;
+    categoriesRef.push(category);
+    handleClose(e);
+  };
+
+  const updateCategory = (e, category) => {
+    const categoryRef = firebase.database().ref(`${user.name}/categories/${category.key}`);
+    categoryRef.update({
+      title: category.title
+    });
+    handleClose(e);
+  };
+
+  const deleteCategory = (e, category) => {
+    if(window.confirm("Delete this category?")) {
+      const categoryRef = firebase.database().ref(`${user.name}/categories/${category.key}`);
+      categoryRef.remove();
+      handleClose(e);
+    }
+  };
 
   const handleChange = (e) => {
     setNewCategoryData({
@@ -37,64 +73,32 @@ const CategoriesList = () => {
 
   const handleEdit = (e, data) => {
     e.preventDefault();
-
     setNewCategoryData(data);
     setDialogOpened(true);
   };
 
-  const handleClose = (e) => {
-    e.preventDefault();
-    setDialogOpened(!dialogOpened);
-    setNewCategoryData({
-      title: ""
-    });
-  };
-
   const handleRemove = (e) => {
     e.preventDefault();
-
-    removeWebCategory(categories, newCategoryData.id, getCategories);
+    deleteCategory(e, newCategoryData);
   };
 
   const handleAdd = (e) => {
     e.preventDefault();
-
-    if (!newCategoryData.id) {
-      const data = {
-        title: newCategoryData.title,
-        id: `cat-${new Date().getTime()}`,
-      };
-      // eslint-disable-next-line no-undef
-      if (chrome && chrome.storage) {
-        addWebCategory(categories, data, getCategories);
-      }else{
-        getCategoriesCallback([...categories, data]);
-        handleClose(e);
-      }
+    if (!newCategoryData.key) {
+      addNewCategory(e, newCategoryData);
     } else {
-      updateWebCategory(categories, newCategoryData, getCategories);
+      updateCategory(e, newCategoryData);
     }
   };
 
-  const getCategoriesCallback = (storedCategories) => {
-    setCategories(storedCategories);
-    setNewCategoryData({
-      title: ""
-    });
-  };
-
-  const getCategories = () => {
-    setDialogOpened(false);
-    getWebCategories(getCategoriesCallback);
-  };
-
   return (
-    <div className="websites-list">
+    <div className={categoryListClasses}>
       <h2>My Websites</h2>
       <div className="website-category-list">
         {categories.map((category) => (
           <WebsiteCategory
-            key={category.id}
+            user={user}
+            key={category.key}
             categoryData={category}
             handleEditCategory={handleEdit}
           />
@@ -138,7 +142,7 @@ const CategoriesList = () => {
               Cancel
             </Button>
 
-            {newCategoryData.id && (
+            {newCategoryData.key && (
               <>
                 <Button type="submit" color="primary">
                   Update
@@ -149,7 +153,7 @@ const CategoriesList = () => {
               </>
             )}
 
-            {!newCategoryData.id && (
+            {!newCategoryData.key && (
               <Button type="submit" color="primary">
                 Add
               </Button>

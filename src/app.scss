@@ -27,3 +27,44 @@ body {
 
   color: #ffffff;
 }
+
+.app-email {
+  font-size: 0.9em;
+
+  position: absolute;
+  top: 12px;
+  left: 185px;
+
+  padding: 5px;
+  padding-bottom: 7px;
+
+  transition-duration: 0.3s;
+  pointer-events: none;
+
+  opacity: 0;
+  color: #ffffff;
+  border-radius: 5px;
+  background-color: rgb(80, 80, 80);
+
+  &:before {
+    position: absolute;
+    top: 8px;
+    left: -15px;
+
+    content: '\A';
+
+    border-width: 7px 15px 7px 0;
+    border-style: solid;
+    border-color: transparent rgb(80, 80, 80) transparent transparent;
+  }
+}
+
+.MuiButtonBase-root.app-logout {
+  position: absolute;
+  top: 12px;
+  left: 50px;
+}
+
+.MuiButtonBase-root.app-logout:hover + .app-email {
+  opacity: 1;
+}

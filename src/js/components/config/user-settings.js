@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import React, { useState, useContext, useEffect } from "react";
-import { saveSettings, getSettings } from "../../chromestorage/services";
 import {
   Dialog,
   DialogActions,
@@ -13,8 +12,16 @@ import {
 } from "@material-ui/core";
 import { MdSettings } from "react-icons/md";
 import HomePageSettings from "../config/context";
+import UserContext from "../../context/UserContext";
+import firebase from "../../../firebase";
+import { setAuthUser } from "../../chromestorage/services";
 
 const UserSettings = () => {
+  const {
+    state: { user },
+    actions: { setUser },
+  } = useContext(UserContext);
+
   const [dialogOpened, setDialogOpened] = useState(false);
   const {
     state: { showTwitch, twitchUser, updateTwitch },
@@ -22,26 +29,46 @@ const UserSettings = () => {
   } = useContext(HomePageSettings);
 
   useEffect(() => {
-    getSettings({ setShowTwitch, setTwitchUser });
+
+    const twitchRef = firebase.database().ref(`${user.name}/twitch`);
+    twitchRef.on("value", (snapshot) => {
+      setTwitchUser(snapshot.val().user);
+      setShowTwitch(snapshot.val().showTwitch);
+    });
+
     setTimeout(() => {
       setUpdateTwitch(!updateTwitch);
     }, 500);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = (e) => {
     e.preventDefault();
 
-    if(dialogOpened){
+    if (dialogOpened) {
+      const twitchRef = firebase.database().ref(`${user.name}/twitch`);
+      twitchRef.set({
+        user: twitchUser,
+        showTwitch: showTwitch
+      });
 
-      saveSettings({ showTwitch, twitchUser, setShowTwitch, setTwitchUser });
 
       setTimeout(() => {
         setUpdateTwitch(!updateTwitch);
       }, 500);
+
     }
 
     setDialogOpened(!dialogOpened);
+  };
+
+  const onLogout = () => {
+    setAuthUser(``);
+    firebase
+      .auth()
+      .signOut()
+      .then((response) => setUser({ email: ``, name: ``, isAuthenticated: false }))
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -49,6 +76,12 @@ const UserSettings = () => {
       <div className="app-settings" onClick={handleClose}>
         <MdSettings />
       </div>
+      
+      <Button className="app-logout" color="secondary" onClick={onLogout}>
+        Cerrar Sesión
+      </Button>
+      <div className="app-email">{user.email} </div>
+
       <Dialog
         open={dialogOpened}
         onClose={handleClose}
