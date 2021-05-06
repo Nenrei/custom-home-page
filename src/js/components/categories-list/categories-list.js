@@ -13,7 +13,7 @@ import { MdAdd } from "react-icons/md";
 import HomePageSettings from "../config/context";
 import ClassNames from "classnames";
 import UserContext from "../../context/UserContext";
-import firebase from "../../../firebase";
+import { addNewCategory, updateCategory, deleteCategory } from "../../firebase/services" 
 
 const CategoriesList = ({categories}) => {
   const {
@@ -40,30 +40,7 @@ const CategoriesList = ({categories}) => {
       webPages: []
     });
   };
-
-  const addNewCategory = (e, category) => {
-    const categoriesRef = firebase.database().ref(`${user.name}/categories`);
-    delete category.key;
-    categoriesRef.push(category);
-    handleClose(e);
-  };
-
-  const updateCategory = (e, category) => {
-    const categoryRef = firebase.database().ref(`${user.name}/categories/${category.key}`);
-    categoryRef.update({
-      title: category.title
-    });
-    handleClose(e);
-  };
-
-  const deleteCategory = (e, category) => {
-    if(window.confirm("Delete this category?")) {
-      const categoryRef = firebase.database().ref(`${user.name}/categories/${category.key}`);
-      categoryRef.remove();
-      handleClose(e);
-    }
-  };
-
+  
   const handleChange = (e) => {
     setNewCategoryData({
       ...newCategoryData,
@@ -79,15 +56,15 @@ const CategoriesList = ({categories}) => {
 
   const handleRemove = (e) => {
     e.preventDefault();
-    deleteCategory(e, newCategoryData);
+    deleteCategory(user.name, newCategoryData).then(result => { handleClose(e); });
   };
 
   const handleAdd = (e) => {
     e.preventDefault();
     if (!newCategoryData.key) {
-      addNewCategory(e, newCategoryData);
+      addNewCategory(user.name, newCategoryData).then(result => { handleClose(e); });
     } else {
-      updateCategory(e, newCategoryData);
+      updateCategory(user.name, newCategoryData).then(result => { handleClose(e); });
     }
   };
 

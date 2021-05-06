@@ -8,7 +8,7 @@ import {
   TextField,
   Button,
 } from "@material-ui/core";
-import firebase from "../../../firebase";
+import { addNewWebPage, updateWebPage, deleteWebPage } from "../../firebase/services" 
 
 const WebsiteCategory = ({ user, categoryData, handleEditCategory }) => {
   const [dialogOpened, setDialogOpened] = useState(false);
@@ -40,48 +40,23 @@ const WebsiteCategory = ({ user, categoryData, handleEditCategory }) => {
     });
   };
 
-  const addNewWebPage = (e, webPage) => {
-    const webPageRef = firebase.database().ref(`${user.name}/categories/${categoryData.key}/webPages`);
-    delete webPage.key;
-    webPageRef.push(webPage);
-    handleClose(e);
-  };
-
-  const updateWebPage = (e, webPage) => {
-    const categoryRef = firebase.database().ref(`${user.name}/categories/${categoryData.key}/webPages/${webPage.key}`);
-    categoryRef.update({
-      url: webPage.url,
-      icon: webPage.icon,
-      title: webPage.title
-    });
-    handleClose(e);
-  };
-
-  const deleteWebPage = (webPageKey) => {
-    if(window.confirm("Delete this category?")) {
-      const categoryRef = firebase.database().ref(`${user.name}/categories/${categoryData.key}/webPages/${webPageKey}`);
-      categoryRef.remove();
-    }
-  };
-  
-
   const handleEdit = (e, data) => {
     e.preventDefault();
     setNewWebPageData(data);
     setDialogOpened(true);
   };
 
-  const handleRemove = (e, key) => {
+  const handleRemove = (e, webPageData) => {
     e.preventDefault();
-    deleteWebPage(key);
+    deleteWebPage(user.name, categoryData.key, webPageData);
   };
 
   const handleAdd = (e) => {
     e.preventDefault();    
     if (!newWebPageData.key) {
-      addNewWebPage(e, newWebPageData);
+      addNewWebPage(user.name, categoryData.key, newWebPageData).then(result => { handleClose(e); });
     } else {
-      updateWebPage(e, newWebPageData);
+      updateWebPage(user.name, categoryData.key, newWebPageData).then(result => { handleClose(e); });
     }
   };
 

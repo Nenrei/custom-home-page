@@ -8,7 +8,7 @@ import UserSettings from "./js/components/config/user-settings";
 import HomePageSettings from "./js/components/config/context";
 import UserContext from "./js/context/UserContext";
 import Login from "./js/components/login/login";
-import firebase from "./firebase";
+import { getUserData } from "./js/firebase/services";
 
 const App = () => {
   const [showTwitch, setShowTwitch] = useState(false);
@@ -22,30 +22,7 @@ const App = () => {
 
   useEffect(() => {
     if(user){
-      const userDataRef = firebase.database().ref(`${user.name}`);
-      userDataRef.on("value", (snapshot) => {
-        const categories = snapshot.val().categories;
-        const newStateCategories = [];
-        for(let category in categories){
-          newStateCategories.push({
-            key: category,
-            title: categories[category].title,
-            webPages: categories[category].webPages,
-          });
-        }
-        setCategories(newStateCategories);
-
-        const twitch = snapshot.val().twitch;
-        if(twitch){
-          if(twitch.user && twitch.user.length > 0){
-            setTwitchUser(twitch.user);
-          }
-          if(twitch.showTwitch !== undefined){
-            setShowTwitch(twitch.showTwitch);
-          }
-        }
-
-      });
+      getUserData(user.name, setCategories, setTwitchUser, setShowTwitch);
     }
   }, [setCategories, user]);
 

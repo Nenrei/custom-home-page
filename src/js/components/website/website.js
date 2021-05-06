@@ -15,7 +15,7 @@ const Website = ({
         className="website__btn website__btn--remove"
         title="Remove"
         onClick={(e) => {
-          handleRemove(e, websiteData.key);
+          handleRemove(e, websiteData);
         }}
       >
         <MdClose />
