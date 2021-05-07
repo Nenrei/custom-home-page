@@ -10,16 +10,14 @@ import {
   FormControlLabel,
   FormGroup,
 } from "@material-ui/core";
-import { MdSettings } from "react-icons/md";
+import { MdSettings, MdHighlightOff } from "react-icons/md";
 import HomePageSettings from "../config/context";
 import UserContext from "../../context/UserContext";
-import firebase from "../../../firebase";
-import { setAuthUser } from "../../chromestorage/services";
+import { getTwitchData, setTwitchData } from "../../firebase/services";
 
-const UserSettings = () => {
+const UserSettings = ({ onLogout }) => {
   const {
     state: { user },
-    actions: { setUser },
   } = useContext(UserContext);
 
   const [dialogOpened, setDialogOpened] = useState(false);
@@ -28,17 +26,15 @@ const UserSettings = () => {
     actions: { setShowTwitch, setTwitchUser, setUpdateTwitch },
   } = useContext(HomePageSettings);
 
-  useEffect(() => {
-
-    const twitchRef = firebase.database().ref(`${user.name}/twitch`);
-    twitchRef.on("value", (snapshot) => {
-      setTwitchUser(snapshot.val().user);
-      setShowTwitch(snapshot.val().showTwitch);
-    });
-
+  const delaidUpdateTwitch = () => {
     setTimeout(() => {
       setUpdateTwitch(!updateTwitch);
     }, 500);
+  };
+
+  useEffect(() => {
+    getTwitchData(user.name, setTwitchUser, setShowTwitch);
+    delaidUpdateTwitch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -46,42 +42,36 @@ const UserSettings = () => {
     e.preventDefault();
 
     if (dialogOpened) {
-      const twitchRef = firebase.database().ref(`${user.name}/twitch`);
-      twitchRef.set({
-        user: twitchUser,
-        showTwitch: showTwitch
-      });
-
-
-      setTimeout(() => {
-        setUpdateTwitch(!updateTwitch);
-      }, 500);
-
+      setTwitchData(user.name, twitchUser, showTwitch);
+      delaidUpdateTwitch();
     }
 
     setDialogOpened(!dialogOpened);
   };
 
-  const onLogout = () => {
-    setAuthUser(``);
-    firebase
-      .auth()
-      .signOut()
-      .then((response) => setUser({ email: ``, name: ``, isAuthenticated: false }))
-      .catch((error) => console.log(error));
-  };
-
   return (
     <>
-      <div className="app-settings" onClick={handleClose}>
-        <MdSettings />
-      </div>
-      
-      <Button className="app-logout" color="secondary" onClick={onLogout}>
-        Cerrar Sesión
-      </Button>
-      <div className="app-email">{user.email} </div>
-
+      <header className="app-header">
+        <Button className="app-header__logout" onClick={onLogout}>
+          <MdHighlightOff className="app-header__icon" />
+          Cerrar Sesión
+          <div className="app-header__tooltip app-header__email">{user.email} </div>
+        </Button>
+        <Button className="app-header__twitch" onClick={handleClose}>
+          <MdSettings className="app-header__icon" />
+          Configurar Twitch
+          {(twitchUser && twitchUser.length > 0) && <div className="app-header__tooltip app-header__twitch-user">{twitchUser} </div>}
+        </Button>
+        
+        {/*
+        <Button className="app-header__firebase">
+          Guardar a BBDD
+        </Button>
+        <Button className="app-header__firebase">
+          Cargar de BBDD
+        </Button>
+        */}
+      </header>
       <Dialog
         open={dialogOpened}
         onClose={handleClose}
@@ -93,7 +83,7 @@ const UserSettings = () => {
             <FormGroup row>
               <FormControlLabel
                 labelPlacement="start"
-                label="Show Twitch"
+                label="Mostrar Twitch"
                 control={
                   <Switch
                     checked={showTwitch}
@@ -108,7 +98,7 @@ const UserSettings = () => {
               <TextField
                 margin="dense"
                 name="title"
-                label="Twitch User"
+                label="Usuario de Twitch"
                 type="text"
                 variant="outlined"
                 value={twitchUser}
@@ -122,7 +112,7 @@ const UserSettings = () => {
           </DialogContent>
           <DialogActions>
             <Button type="submit" color="primary">
-              Close
+              Cerrar
             </Button>
           </DialogActions>
         </form>

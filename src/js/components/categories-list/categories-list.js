@@ -70,7 +70,7 @@ const CategoriesList = ({categories}) => {
 
   return (
     <div className={categoryListClasses}>
-      <h2>My Websites</h2>
+      <h2>Mis Webs</h2>
       <div className="website-category-list">
         {categories.map((category) => (
           <WebsiteCategory
@@ -105,7 +105,7 @@ const CategoriesList = ({categories}) => {
             <TextField
               margin="dense"
               name="title"
-              label="Category Name"
+              label="Nombre del Grupo"
               type="text"
               variant="outlined"
               value={newCategoryData.title}
@@ -116,23 +116,23 @@ const CategoriesList = ({categories}) => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="secondary">
-              Cancel
+              Cancelar
             </Button>
 
             {newCategoryData.key && (
               <>
                 <Button type="submit" color="primary">
-                  Update
+                  Actualizar
                 </Button>
                 <Button onClick={handleRemove} color="primary">
-                  Remove
+                  Eliminar
                 </Button>
               </>
             )}
 
             {!newCategoryData.key && (
               <Button type="submit" color="primary">
-                Add
+                Añadir
               </Button>
             )}
           </DialogActions>

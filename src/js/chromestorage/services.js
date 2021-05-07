@@ -147,6 +147,8 @@ export const getAuthUser = (callback) => {
     chrome.storage.sync.get(["authUser"], ({authUser}) => {
       callback(authUser);
     });
+  }else{
+    callback(null);
   }
 };
 

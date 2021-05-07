@@ -50,15 +50,17 @@ const Twitch = () => {
   return showTwitch ? (
     <div className={collapseTwitchClass}>
       <h2>
-        <span>Twitch Live Channels </span>
+        <span>Canales en Directo </span>
         <MdAutorenew
           className="twitch-live-channels__refresh"
+          title="Actualizar Lista"
           onClick={() => {
             handleRefresh(showTwitch);
           }}
         />{" "}
         <MdKeyboardArrowLeft
           className={collapseClass}
+          title={collapsed ? "Desplegar" : "Plegar"}
           onClick={() => {
             handleCollapse();
           }}

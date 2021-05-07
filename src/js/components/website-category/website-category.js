@@ -103,7 +103,7 @@ const WebsiteCategory = ({ user, categoryData, handleEditCategory }) => {
             <TextField
               margin="dense"
               name="title"
-              label="Website Name"
+              label="Nombre de la web"
               type="text"
               variant="outlined"
               value={newWebPageData.title}
@@ -114,7 +114,7 @@ const WebsiteCategory = ({ user, categoryData, handleEditCategory }) => {
             <TextField
               margin="dense"
               name="url"
-              label="Website Url"
+              label="URL de la web"
               type="text"
               variant="outlined"
               value={newWebPageData.url}
@@ -125,7 +125,7 @@ const WebsiteCategory = ({ user, categoryData, handleEditCategory }) => {
             <TextField
               margin="dense"
               name="icon"
-              label="Icon Url"
+              label="Icono de la web"
               type="text"
               variant="outlined"
               value={newWebPageData.icon}
@@ -136,10 +136,10 @@ const WebsiteCategory = ({ user, categoryData, handleEditCategory }) => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="secondary">
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" color="primary">
-              {!newWebPageData.key ? "Add" : "Update"}
+              {!newWebPageData.key ? "Añadir" : "Actualizar"}
             </Button>
           </DialogActions>
         </form>
