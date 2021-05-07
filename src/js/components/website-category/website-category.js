@@ -2,20 +2,15 @@ import React, { useState, useEffect } from "react";
 import Website from "../website/website";
 import "./website-category.scss";
 import {
-  getWebPages,
-  addWebPage,
-  removeWebPage,
-  updateWebPage,
-} from "../../chromestorage/services";
-import {
   Dialog,
   DialogActions,
   DialogContent,
   TextField,
   Button,
 } from "@material-ui/core";
+import { addNewWebPage, updateWebPage, deleteWebPage } from "../../firebase/services" 
 
-const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
+const WebsiteCategory = ({ user, categoryData, handleEditCategory }) => {
   const [dialogOpened, setDialogOpened] = useState(false);
   const [webPages, setWebPages] = useState([]);
   const [newWebPageData, setNewWebPageData] = useState({
@@ -25,9 +20,18 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
   });
 
   useEffect(() => {
-    getWebsites();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      const webPages = categoryData.webPages;
+      const newStateWebPages = [];
+      for(let webPage in webPages){
+        newStateWebPages.push({
+          key: webPage,
+          url: webPages[webPage].url,
+          icon: webPages[webPage].icon,
+          title: webPages[webPage].title,
+        });
+      }
+      setWebPages(newStateWebPages);
+  }, [setWebPages, categoryData.webPages]);
 
   const handleChange = (e) => {
     setNewWebPageData({
@@ -38,37 +42,21 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
 
   const handleEdit = (e, data) => {
     e.preventDefault();
-
     setNewWebPageData(data);
     setDialogOpened(true);
   };
 
-  const handleRemove = (e, id) => {
+  const handleRemove = (e, webPageData) => {
     e.preventDefault();
-
-    removeWebPage(id, getWebsites);
+    deleteWebPage(user.name, categoryData.key, webPageData);
   };
 
   const handleAdd = (e) => {
-    e.preventDefault();
-    const data = {
-      categoryId: categoryData.id,
-      url: newWebPageData.url,
-      icon: newWebPageData.icon,
-      title: newWebPageData.title,
-    };
-    
-    if (!newWebPageData.id) {
-      data.id =`site-${(new Date()).getTime()}`;
-      // eslint-disable-next-line no-undef
-      if (chrome && chrome.storage) {
-        addWebPage(data, getWebsites);
-      }else{
-        setWebPages([...webPages, data]);
-        handleClose(e);
-      }
+    e.preventDefault();    
+    if (!newWebPageData.key) {
+      addNewWebPage(user.name, categoryData.key, newWebPageData).then(result => { handleClose(e); });
     } else {
-      updateWebPage(newWebPageData, getWebsites);
+      updateWebPage(user.name, categoryData.key, newWebPageData).then(result => { handleClose(e); });
     }
   };
 
@@ -80,22 +68,6 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
       icon: "",
       title: "",
     });
-  };
-
-  const getWebsitesCallback = (storedSites) => {
-    setWebPages(storedSites);
-    setNewWebPageData({
-      url: "",
-      icon: "",
-      title: "",
-      id: "",
-    });
-  }
-
-  const getWebsites = () => {
-    setDialogOpened(false);
-
-    getWebPages(categoryData.id, getWebsitesCallback);
   };
 
   return (
@@ -112,7 +84,7 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
         {webPages &&
           webPages.map((web) => (
             <Website
-              key={web.id}
+              key={web.key}
               websiteData={web}
               handleEdit={handleEdit}
               handleRemove={handleRemove}
@@ -131,7 +103,7 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
             <TextField
               margin="dense"
               name="title"
-              label="Website Name"
+              label="Nombre de la web"
               type="text"
               variant="outlined"
               value={newWebPageData.title}
@@ -142,7 +114,7 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
             <TextField
               margin="dense"
               name="url"
-              label="Website Url"
+              label="URL de la web"
               type="text"
               variant="outlined"
               value={newWebPageData.url}
@@ -153,20 +125,21 @@ const WebsiteCategory = ({ categoryData, handleEditCategory }) => {
             <TextField
               margin="dense"
               name="icon"
-              label="Icon Url"
+              label="Icono de la web"
               type="text"
               variant="outlined"
               value={newWebPageData.icon}
               onChange={handleChange}
               fullWidth
+              required
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="secondary">
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" color="primary">
-              {!newWebPageData.id ? "Add" : "Update"}
+              {!newWebPageData.key ? "Añadir" : "Actualizar"}
             </Button>
           </DialogActions>
         </form>

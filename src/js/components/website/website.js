@@ -10,19 +10,19 @@ const Website = ({
   handleEdit,
 }) => {
   return !isAdd ? (
-    <div className="website" title={websiteData.title}>
+    <div className="website">
       <button
         className="website__btn website__btn--remove"
-        title="Remove"
+        title="Eliminar"
         onClick={(e) => {
-          handleRemove(e, websiteData.id);
+          handleRemove(e, websiteData);
         }}
       >
         <MdClose />
       </button>
       <button
         className="website__btn website__btn--edit"
-        title="Edit"
+        title="Editar"
         onClick={(e) => {
           handleEdit(e, websiteData);
         }}
@@ -33,18 +33,18 @@ const Website = ({
         <img
           className="website__icon"
           src={
-            websiteData.icon.length === 0
+            websiteData.icon && websiteData.icon.length === 0
               ? `https://www.google.com/s2/favicons?domain=${websiteData.url}`
               : websiteData.icon
           }
-          alt=""
+          alt={websiteData.title}
         />
       </a>
       <span className="website__title">{websiteData.title}</span>
     </div>
   ) : (
-    <div className="website" title="New Website">
-      <button className="website__btn-add" title="Add" onClick={handleAdd}>
+    <div className="website" title="Nueva Web">
+      <button className="website__btn-add" title="Añadir" onClick={handleAdd}>
         <MdAdd />
       </button>
     </div>

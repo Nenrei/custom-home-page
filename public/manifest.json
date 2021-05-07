@@ -3,8 +3,9 @@
   "short_name": "Home Page",
   "name": "Custom Home Page",
   "description": "Customizable home page with favorite webs and twitch live channels",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage_url": "https://github.com/Nenrei?tab=repositories",
+  
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
@@ -15,7 +16,7 @@
     "default_icon": "favicon.png",
     "default_title": "Custom Home Page"
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://www.gstatic.com/​ https://*.firebaseio.com​ https://www.googleapis.com​ https://www.googletagmanager.com;​ object-src 'self'",
   "web_accessible_resources": ["index.html", "/static/*"],
   "chrome_url_overrides": {
     "newtab": "index.html"

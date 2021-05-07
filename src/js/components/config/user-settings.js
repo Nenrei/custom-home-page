@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import React, { useState, useContext, useEffect } from "react";
-import { saveSettings, getSettings } from "../../chromestorage/services";
 import {
   Dialog,
   DialogActions,
@@ -11,34 +10,40 @@ import {
   FormControlLabel,
   FormGroup,
 } from "@material-ui/core";
-import { MdSettings } from "react-icons/md";
+import { MdSettings, MdHighlightOff } from "react-icons/md";
 import HomePageSettings from "../config/context";
+import UserContext from "../../context/UserContext";
+import { getTwitchData, setTwitchData } from "../../firebase/services";
 
-const UserSettings = () => {
+const UserSettings = ({ onLogout }) => {
+  const {
+    state: { user },
+  } = useContext(UserContext);
+
   const [dialogOpened, setDialogOpened] = useState(false);
   const {
     state: { showTwitch, twitchUser, updateTwitch },
     actions: { setShowTwitch, setTwitchUser, setUpdateTwitch },
   } = useContext(HomePageSettings);
 
-  useEffect(() => {
-    getSettings({ setShowTwitch, setTwitchUser });
+  const delaidUpdateTwitch = () => {
     setTimeout(() => {
       setUpdateTwitch(!updateTwitch);
     }, 500);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  };
+
+  useEffect(() => {
+    getTwitchData(user.name, setTwitchUser, setShowTwitch);
+    delaidUpdateTwitch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = (e) => {
     e.preventDefault();
 
-    if(dialogOpened){
-
-      saveSettings({ showTwitch, twitchUser, setShowTwitch, setTwitchUser });
-
-      setTimeout(() => {
-        setUpdateTwitch(!updateTwitch);
-      }, 500);
+    if (dialogOpened) {
+      setTwitchData(user.name, twitchUser, showTwitch);
+      delaidUpdateTwitch();
     }
 
     setDialogOpened(!dialogOpened);
@@ -46,9 +51,27 @@ const UserSettings = () => {
 
   return (
     <>
-      <div className="app-settings" onClick={handleClose}>
-        <MdSettings />
-      </div>
+      <header className="app-header">
+        <Button className="app-header__logout" onClick={onLogout}>
+          <MdHighlightOff className="app-header__icon" />
+          Cerrar Sesión
+          <div className="app-header__tooltip app-header__email">{user.email} </div>
+        </Button>
+        <Button className="app-header__twitch" onClick={handleClose}>
+          <MdSettings className="app-header__icon" />
+          Configurar Twitch
+          {(twitchUser && twitchUser.length > 0) && <div className="app-header__tooltip app-header__twitch-user">{twitchUser} </div>}
+        </Button>
+        
+        {/*
+        <Button className="app-header__firebase">
+          Guardar a BBDD
+        </Button>
+        <Button className="app-header__firebase">
+          Cargar de BBDD
+        </Button>
+        */}
+      </header>
       <Dialog
         open={dialogOpened}
         onClose={handleClose}
@@ -60,7 +83,7 @@ const UserSettings = () => {
             <FormGroup row>
               <FormControlLabel
                 labelPlacement="start"
-                label="Show Twitch"
+                label="Mostrar Twitch"
                 control={
                   <Switch
                     checked={showTwitch}
@@ -75,7 +98,7 @@ const UserSettings = () => {
               <TextField
                 margin="dense"
                 name="title"
-                label="Twitch User"
+                label="Usuario de Twitch"
                 type="text"
                 variant="outlined"
                 value={twitchUser}
@@ -89,7 +112,7 @@ const UserSettings = () => {
           </DialogContent>
           <DialogActions>
             <Button type="submit" color="primary">
-              Close
+              Cerrar
             </Button>
           </DialogActions>
         </form>

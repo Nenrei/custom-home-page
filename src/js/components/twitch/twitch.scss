@@ -10,12 +10,17 @@
     border-bottom: 1px solid;
   }
 
-  &__refresh {
-    float: right;
-
-    margin-right: 20px;
-
+  &__refresh,
+  &__collapse {
     cursor: pointer;
+  }
+
+  &__refresh {
+    margin-left: 10px;
+  }
+
+  &__collapse--collapsed {
+    transform: rotate(0.5turn);
   }
 
   &__channel {
@@ -131,6 +136,17 @@
 
         color: #666666;
       }
+    }
+  }
+
+  &--collapsed {
+    width: 30px;
+
+    h2 > span,
+    .twitch-live-channels__refresh,
+    .twitch-live-channels__channel,
+    .twitch-live-channels__loading {
+      display: none;
     }
   }
 }

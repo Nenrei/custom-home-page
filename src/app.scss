@@ -16,6 +16,31 @@ body {
   margin-right: 10px !important;
 }
 
+.app-loading {
+  font-size: 4em;
+
+  margin: 0 auto;
+  padding: 20px;
+
+  text-align: center;
+
+  color: #ffffff;
+
+  &__icon {
+    animation: rotating 2s linear infinite;
+  }
+}
+
+@keyframes rotating {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
 .app-settings {
   font-size: 2em;
 
@@ -26,4 +51,107 @@ body {
   cursor: pointer;
 
   color: #ffffff;
+}
+
+.app-header {
+  position: absolute;
+  top: -5px;
+  left: 10px;
+
+  padding: 12px 20px 5px 20px;
+
+  border-top: none;
+  border-left: none;
+  border-radius: 5px;
+  background-color: #171717;
+  box-shadow: black 1px 1px 6px 2px;
+
+  &__twitch.MuiButtonBase-root,
+  &__firebase.MuiButtonBase-root,
+  &__logout.MuiButtonBase-root {
+    position: relative;
+
+    margin-right: 10px;
+
+    transition-duration: 0.2s;
+  }
+
+  &__twitch.MuiButtonBase-root {
+    color: #7947d8;
+
+    :hover {
+      color: #936cdb;
+    }
+  }
+
+  &__firebase.MuiButtonBase-root {
+    color: #e09b24;
+
+    :hover {
+      color: #e4b35f;
+    }
+  }
+
+  &__logout.MuiButtonBase-root {
+    color: #d32525;
+
+    :hover {
+      color: #db5959;
+    }
+  }
+
+  &__icon {
+    font-size: 1.5em;
+
+    margin-top: -2px;
+    margin-right: 1px;
+
+    transition-duration: 0.3s;
+  }
+
+  &__tooltip {
+    font-size: 0.9em;
+
+    position: absolute;
+    top: 50px;
+    left: 0;
+
+    padding-right: 7px;
+    padding-bottom: 3px;
+    padding-left: 7px;
+
+    transition-duration: 0.3s;
+    text-transform: none;
+    pointer-events: none;
+
+    opacity: 0;
+    color: #ffffff;
+    border-radius: 5px;
+    background-color: rgb(80, 80, 80);
+
+    &:before {
+      position: absolute;
+      top: -6px;
+      left: 9px;
+
+      content: '\A';
+
+      border-width: 0 10px 10px 10px;
+      border-style: solid;
+      border-color: transparent transparent #505050 transparent;
+    }
+  }
+
+  > .MuiButtonBase-root:hover {
+    .app-header__icon {
+      transform: rotate(-90deg);
+    }
+  }
+}
+
+.MuiButtonBase-root.app-header__logout:hover .app-header__email,
+.MuiButtonBase-root.app-header__twitch:hover .app-header__twitch-user {
+  top: 35px;
+
+  opacity: 1;
 }

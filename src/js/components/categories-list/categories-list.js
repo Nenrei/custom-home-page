@@ -1,11 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect } from "react";
-import {
-  getWebCategories,
-  addWebCategory,
-  removeWebCategory,
-  updateWebCategory,
-} from "../../chromestorage/services";
+import React, { useState, useContext } from "react";
 import "./categories-list.scss";
 import {
   Dialog,
@@ -16,18 +10,37 @@ import {
 } from "@material-ui/core";
 import WebsiteCategory from "../website-category/website-category";
 import { MdAdd } from "react-icons/md";
+import HomePageSettings from "../config/context";
+import ClassNames from "classnames";
+import UserContext from "../../context/UserContext";
+import { addNewCategory, updateCategory, deleteCategory } from "../../firebase/services" 
 
-const CategoriesList = () => {
+const CategoriesList = ({categories}) => {
+  const {
+    state: { isTwitchCollapsed, showTwitch },
+  } = useContext(HomePageSettings);
+
   const [dialogOpened, setDialogOpened] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [newCategoryData, setNewCategoryData] = useState({
-    title: ""
+    title: "",
   });
 
-  useEffect(() => {
-    getCategories();
-  }, []);
+  const categoryListClasses = ClassNames({
+    "websites-list": true,
+    "websites-list--extended": !showTwitch || (showTwitch && isTwitchCollapsed),
+  });
 
+  const { state: { user } } = useContext(UserContext);
+
+  const handleClose = (e) => {
+    e.preventDefault();
+    setDialogOpened(!dialogOpened);
+    setNewCategoryData({
+      title: "",
+      webPages: []
+    });
+  };
+  
   const handleChange = (e) => {
     setNewCategoryData({
       ...newCategoryData,
@@ -37,64 +50,32 @@ const CategoriesList = () => {
 
   const handleEdit = (e, data) => {
     e.preventDefault();
-
     setNewCategoryData(data);
     setDialogOpened(true);
   };
 
-  const handleClose = (e) => {
-    e.preventDefault();
-    setDialogOpened(!dialogOpened);
-    setNewCategoryData({
-      title: ""
-    });
-  };
-
   const handleRemove = (e) => {
     e.preventDefault();
-
-    removeWebCategory(categories, newCategoryData.id, getCategories);
+    deleteCategory(user.name, newCategoryData).then(result => { handleClose(e); });
   };
 
   const handleAdd = (e) => {
     e.preventDefault();
-
-    if (!newCategoryData.id) {
-      const data = {
-        title: newCategoryData.title,
-        id: `cat-${new Date().getTime()}`,
-      };
-      // eslint-disable-next-line no-undef
-      if (chrome && chrome.storage) {
-        addWebCategory(categories, data, getCategories);
-      }else{
-        getCategoriesCallback([...categories, data]);
-        handleClose(e);
-      }
+    if (!newCategoryData.key) {
+      addNewCategory(user.name, newCategoryData).then(result => { handleClose(e); });
     } else {
-      updateWebCategory(categories, newCategoryData, getCategories);
+      updateCategory(user.name, newCategoryData).then(result => { handleClose(e); });
     }
   };
 
-  const getCategoriesCallback = (storedCategories) => {
-    setCategories(storedCategories);
-    setNewCategoryData({
-      title: ""
-    });
-  };
-
-  const getCategories = () => {
-    setDialogOpened(false);
-    getWebCategories(getCategoriesCallback);
-  };
-
   return (
-    <div className="websites-list">
-      <h2>My Websites</h2>
+    <div className={categoryListClasses}>
+      <h2>Mis Webs</h2>
       <div className="website-category-list">
         {categories.map((category) => (
           <WebsiteCategory
-            key={category.id}
+            user={user}
+            key={category.key}
             categoryData={category}
             handleEditCategory={handleEdit}
           />
@@ -124,7 +105,7 @@ const CategoriesList = () => {
             <TextField
               margin="dense"
               name="title"
-              label="Category Name"
+              label="Nombre del Grupo"
               type="text"
               variant="outlined"
               value={newCategoryData.title}
@@ -135,23 +116,23 @@ const CategoriesList = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="secondary">
-              Cancel
+              Cancelar
             </Button>
 
-            {newCategoryData.id && (
+            {newCategoryData.key && (
               <>
                 <Button type="submit" color="primary">
-                  Update
+                  Actualizar
                 </Button>
                 <Button onClick={handleRemove} color="primary">
-                  Remove
+                  Eliminar
                 </Button>
               </>
             )}
 
-            {!newCategoryData.id && (
+            {!newCategoryData.key && (
               <Button type="submit" color="primary">
-                Add
+                Añadir
               </Button>
             )}
           </DialogActions>
