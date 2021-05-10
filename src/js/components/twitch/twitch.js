@@ -38,6 +38,15 @@ const Twitch = () => {
       setCollapsed(data);
       setIsTwitchCollapsed(data);
     });
+
+    const interval = setInterval(() => {
+      console.log("Update Twitch");
+      handleRefresh(showTwitch);
+    }, 300000);
+    return () => {
+      clearInterval(interval);
+    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTwitch]);
 
@@ -50,7 +59,7 @@ const Twitch = () => {
   return showTwitch ? (
     <div className={collapseTwitchClass}>
       <h2>
-        <span>Canales en Directo </span>
+        <div className="twitch-live-channels__title">Canales en Directo</div>
         <MdAutorenew
           className="twitch-live-channels__refresh"
           title="Actualizar Lista"
@@ -71,40 +80,43 @@ const Twitch = () => {
           Loading Twitch channels...
         </div>
       ) : !loading && liveChannels.length > 0 ? (
-        liveChannels.map((live) => {
-          return (
-            <a
-              className="twitch-live-channels__channel"
-              key={live.user_id}
-              href={`https://www.twitch.tv/${live.login}`}
-            >
-              <img
-                className="twitch-live-channels__channel__image"
-                src={live.profile_image_url}
-                alt=""
-              />
+        <div className="twitch-live-channels__list">
+          {liveChannels.map((live) => {
+            return (
+              <a
+                className="twitch-live-channels__channel"
+                key={live.user_id}
+                href={`https://www.twitch.tv/${live.login}`}
+              >
+                <img
+                  className="twitch-live-channels__channel__image"
+                  src={live.profile_image_url}
+                  alt={live.user_name}
+                  title={collapsed ? live.user_name : ""}
+                />
 
-              <div className="twitch-live-channels__channel__data">
-                <div className="twitch-live-channels__channel__data__name">
-                  {live.user_name}
+                <div className="twitch-live-channels__channel__data">
+                  <div className="twitch-live-channels__channel__data__name">
+                    {live.user_name}
+                  </div>
+                  <div
+                    className="twitch-live-channels__channel__data__game"
+                    title={live.game_name}
+                  >
+                    {live.game_name}
+                  </div>
                 </div>
-                <div
-                  className="twitch-live-channels__channel__data__game"
-                  title={live.game_name}
-                >
-                  {live.game_name}
-                </div>
-              </div>
 
-              <div className="twitch-live-channels__channel__viewers">
-                <div className="twitch-live-channels__channel__viewers__circle"></div>
-                <div className="twitch-live-channels__channel__viewers__number">
-                  {live.viewer_count}
+                <div className="twitch-live-channels__channel__viewers">
+                  <div className="twitch-live-channels__channel__viewers__circle"></div>
+                  <div className="twitch-live-channels__channel__viewers__number">
+                    {live.viewer_count}
+                  </div>
                 </div>
-              </div>
-            </a>
-          );
-        })
+              </a>
+            );
+          })}
+        </div>
       ) : (
         <div className="twitch-live-channels__no-chanels"></div>
       )}

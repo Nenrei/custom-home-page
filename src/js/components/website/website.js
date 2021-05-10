@@ -1,6 +1,7 @@
 import React from "react";
 import "./website.scss";
-import { MdClose, MdModeEdit, MdAdd } from "react-icons/md";
+import { MdClose, MdModeEdit, MdAdd, MdChevronLeft, MdChevronRight } from "react-icons/md";
+import ClassNames from "classnames";
 
 const Website = ({
   isAdd,
@@ -8,9 +9,20 @@ const Website = ({
   handleAdd,
   handleRemove,
   handleEdit,
+  first,
+  last,
+  orderLeftWebSite,
+  orderRightWebSite,
 }) => {
+
+  const websiteClass = ClassNames({
+    "website": true,
+    "website--first": first,
+    "website--last": last,
+  });
+
   return !isAdd ? (
-    <div className="website">
+    <div className={websiteClass}>
       <button
         className="website__btn website__btn--remove"
         title="Eliminar"
@@ -41,6 +53,14 @@ const Website = ({
         />
       </a>
       <span className="website__title">{websiteData.title}</span>
+      <MdChevronLeft
+        className="website__order-icon website__order-icon--left"
+        onClick={(e) => {orderLeftWebSite(e, websiteData)}}
+      />
+      <MdChevronRight
+        className="website__order-icon website__order-icon--right"
+        onClick={(e) => {orderRightWebSite(e, websiteData)}}
+      />
     </div>
   ) : (
     <div className="website" title="Nueva Web">

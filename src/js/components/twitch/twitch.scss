@@ -4,10 +4,28 @@
   width: 300px;
   padding-top: 0;
 
+  transition-duration: 0.2s;
+
   color: #ffffff;
 
   h2 {
     border-bottom: 1px solid;
+  }
+
+  &__list {
+    overflow: overlay;
+
+    height: 83vh;
+  }
+
+  &__title {
+    display: inline-flex;
+    overflow: hidden;
+
+    width: 220px;
+
+    transition-duration: 0.2s;
+    white-space: nowrap;
   }
 
   &__refresh,
@@ -140,13 +158,21 @@
   }
 
   &--collapsed {
-    width: 30px;
+    width: 90px;
 
-    h2 > span,
-    .twitch-live-channels__refresh,
-    .twitch-live-channels__channel,
-    .twitch-live-channels__loading {
-      display: none;
+    .twitch-live-channels__title {
+      display: inline-flex;
+
+      width: 0;
+    }
+
+    .twitch-live-channels__channel {
+      width: 62px;
+
+      &__data,
+      &__viewers {
+        display: none;
+      }
     }
   }
 }
