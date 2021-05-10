@@ -13,9 +13,13 @@ import { MdAdd } from "react-icons/md";
 import HomePageSettings from "../config/context";
 import ClassNames from "classnames";
 import UserContext from "../../context/UserContext";
-import { addNewCategory, updateCategory, deleteCategory } from "../../firebase/services" 
+import {
+  addNewCategory,
+  updateCategory,
+  deleteCategory,
+} from "../../firebase/services";
 
-const CategoriesList = ({categories}) => {
+const CategoriesList = ({ categories }) => {
   const {
     state: { isTwitchCollapsed, showTwitch },
   } = useContext(HomePageSettings);
@@ -30,17 +34,20 @@ const CategoriesList = ({categories}) => {
     "websites-list--extended": !showTwitch || (showTwitch && isTwitchCollapsed),
   });
 
-  const { state: { user } } = useContext(UserContext);
+  const {
+    state: { user },
+  } = useContext(UserContext);
 
   const handleClose = (e) => {
     e.preventDefault();
     setDialogOpened(!dialogOpened);
     setNewCategoryData({
       title: "",
-      webPages: []
+      order: 0,
+      webPages: [],
     });
   };
-  
+
   const handleChange = (e) => {
     setNewCategoryData({
       ...newCategoryData,
@@ -56,15 +63,48 @@ const CategoriesList = ({categories}) => {
 
   const handleRemove = (e) => {
     e.preventDefault();
-    deleteCategory(user.name, newCategoryData).then(result => { handleClose(e); });
+    deleteCategory(user.name, newCategoryData).then((result) => {
+      handleClose(e);
+    });
   };
 
   const handleAdd = (e) => {
     e.preventDefault();
     if (!newCategoryData.key) {
-      addNewCategory(user.name, newCategoryData).then(result => { handleClose(e); });
+      newCategoryData.order = categories[categories.length - 1].order + 1;
+      addNewCategory(user.name, newCategoryData).then((result) => {
+        handleClose(e);
+      });
     } else {
-      updateCategory(user.name, newCategoryData).then(result => { handleClose(e); });
+      updateCategory(user.name, newCategoryData).then((result) => {
+        handleClose(e);
+      });
+    }
+  };
+
+  const orderUpCategory = (e, activeCategory) => {
+    const pasiveCategory = categories.filter(
+      (category) => category.order === activeCategory.order - 1
+    )[0];
+
+    if (activeCategory && pasiveCategory) {
+      pasiveCategory.order += 1;
+      activeCategory.order -= 1;
+      updateCategory(user.name, activeCategory);
+      updateCategory(user.name, pasiveCategory);
+    }
+  };
+
+  const orderDownCategory = (e, activeCategory) => {
+    const pasiveCategory = categories.filter(
+      (category) => category.order === activeCategory.order + 1
+    )[0];
+
+    if (activeCategory && pasiveCategory) {
+      pasiveCategory.order -= 1;
+      activeCategory.order += 1;
+      updateCategory(user.name, activeCategory);
+      updateCategory(user.name, pasiveCategory);
     }
   };
 
@@ -72,12 +112,16 @@ const CategoriesList = ({categories}) => {
     <div className={categoryListClasses}>
       <h2>Mis Webs</h2>
       <div className="website-category-list">
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <WebsiteCategory
             user={user}
             key={category.key}
             categoryData={category}
             handleEditCategory={handleEdit}
+            first={index === 0}
+            last={index === categories.length - 1}
+            orderUpCategory={orderUpCategory}
+            orderDownCategory={orderDownCategory}
           />
         ))}
         <div className="website-category-list__category website-category-list__category--add">

@@ -6,6 +6,8 @@
   padding: 30px;
   padding-top: 0;
 
+  transition-duration: 0.2s;
+
   h2 {
     color: #ffffff;
     border-bottom: 1px solid;
@@ -13,9 +15,14 @@
 
   &__list {
     display: flex;
+    overflow: overlay;
+
+    height: 83vh;
   }
 }
 
 .websites-list--extended {
-  width: calc(100% - 30px);
+  width: calc(100% - 90px);
+
+  transition-duration: 0.2s;
 }

@@ -51,9 +51,11 @@ export const getUserData = (
       newStateCategories.push({
         key: category,
         title: categories[category].title,
+        order: categories[category].order,
         webPages: categories[category].webPages,
       });
     }
+    newStateCategories.sort((a, b) => (a.order > b.order) ? 1 : -1);
     setCategories(newStateCategories);
 
     const twitch = snapshot.val().twitch;
@@ -94,6 +96,7 @@ export const updateWebPage = (username, categoryKey, webPage) => {
     url: webPage.url,
     icon: webPage.icon,
     title: webPage.title,
+    order: webPage.order,
   });
 };
 
@@ -127,6 +130,7 @@ export const updateCategory = (userName, category) => {
     .ref(`${userName}/categories/${category.key}`);
   return categoryRef.update({
     title: category.title,
+    order: category.order,
   });
 };
 

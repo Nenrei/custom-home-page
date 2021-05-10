@@ -134,5 +134,62 @@
   &:hover &__btn-add {
     color: black;
   }
+
+  &__order-icon {
+    font-size: 30px;
+
+    position: absolute;
+    z-index: 10;
+
+    cursor: pointer;
+    transition-duration: 0.2s;
+
+    opacity: 0;
+    color: white;
+
+    &--left {
+      left: 25px;
+    }
+
+    &--right {
+      right: 25px;
+    }
+  }
+
+  &:hover &__order-icon {
+    opacity: 1;
+
+    &:hover {
+      font-size: 34px;
+    }
+
+    &--left {
+      left: -25px;
+
+      &:hover {
+        left: -27px;
+      }
+    }
+
+    &--right {
+      right: -25px;
+
+      &:hover {
+        right: -27px;
+      }
+    }
+  }
+
+  &--first {
+    .website__order-icon--left {
+      display: none;
+    }
+  }
+
+  &--last {
+    .website__order-icon--right {
+      display: none;
+    }
+  }
 }
 
