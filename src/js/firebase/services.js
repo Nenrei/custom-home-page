@@ -45,26 +45,30 @@ export const getUserData = (
 ) => {
   const userDataRef = firebase.database().ref(`${username}`);
   userDataRef.on("value", (snapshot) => {
-    const categories = snapshot.val().categories;
     const newStateCategories = [];
-    for (let category in categories) {
-      newStateCategories.push({
-        key: category,
-        title: categories[category].title,
-        order: categories[category].order,
-        webPages: categories[category].webPages,
-      });
+    if(snapshot.val()){
+      const categories = snapshot.val().categories;
+      for (let category in categories) {
+        newStateCategories.push({
+          key: category,
+          title: categories[category].title,
+          order: categories[category].order,
+          webPages: categories[category].webPages,
+        });
+      }
+      newStateCategories.sort((a, b) => (a.order > b.order) ? 1 : -1);
     }
-    newStateCategories.sort((a, b) => (a.order > b.order) ? 1 : -1);
     setCategories(newStateCategories);
 
-    const twitch = snapshot.val().twitch;
-    if (twitch) {
-      if (twitch.user && twitch.user.length > 0) {
-        setTwitchUser(twitch.user);
-      }
-      if (twitch.showTwitch !== undefined) {
-        setShowTwitch(twitch.showTwitch);
+    if(snapshot.val()){
+      const twitch = snapshot.val().twitch;
+      if (twitch) {
+        if (twitch.user && twitch.user.length > 0) {
+          setTwitchUser(twitch.user);
+        }
+        if (twitch.showTwitch !== undefined) {
+          setShowTwitch(twitch.showTwitch);
+        }
       }
     }
     setLoading(false);
@@ -146,8 +150,10 @@ export const deleteCategory = (userName, category) => {
 export const getTwitchData = (userName, setTwitchUser, setShowTwitch) => {
   const twitchRef = firebase.database().ref(`${userName}/twitch`);
   twitchRef.on("value", (snapshot) => {
-    setTwitchUser(snapshot.val().user);
-    setShowTwitch(snapshot.val().showTwitch);
+    if(snapshot.val()){
+      setTwitchUser(snapshot.val().user);
+      setShowTwitch(snapshot.val().showTwitch);
+    }
   });
 };
 

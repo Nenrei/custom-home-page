@@ -76,7 +76,7 @@ const WebsiteCategory = ({
   const handleAdd = (e) => {
     e.preventDefault();
     if (!newWebPageData.key) {
-      newWebPageData.order = webPages[webPages.length - 1].order + 1;
+      newWebPageData.order = webPages.length > 0 ? webPages[webPages.length - 1].order + 1 : 0;
       addNewWebPage(user.name, categoryData.key, newWebPageData).then(
         (result) => {
           handleClose(e);

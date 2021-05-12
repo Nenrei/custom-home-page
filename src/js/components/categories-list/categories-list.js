@@ -71,7 +71,7 @@ const CategoriesList = ({ categories }) => {
   const handleAdd = (e) => {
     e.preventDefault();
     if (!newCategoryData.key) {
-      newCategoryData.order = categories[categories.length - 1].order + 1;
+      newCategoryData.order = categories.length > 0 ? categories[categories.length - 1].order + 1 : 0;
       addNewCategory(user.name, newCategoryData).then((result) => {
         handleClose(e);
       });
