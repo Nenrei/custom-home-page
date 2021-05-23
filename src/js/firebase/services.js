@@ -43,7 +43,7 @@ export const getUserData = (
   setShowTwitch,
   setLoading
 ) => {
-  const userDataRef = firebase.database().ref(`${username}`);
+  const userDataRef = firebase.database().ref(`customHomePageUsers/${username}`);
   userDataRef.on("value", (snapshot) => {
     const newStateCategories = [];
     if(snapshot.val()){
@@ -79,7 +79,7 @@ export const addNewWebPage = (username, categoryKey, webPage) => {
   var promise = new Promise((resolve, reject) => {
     const webPageRef = firebase
       .database()
-      .ref(`${username}/categories/${categoryKey}/webPages`);
+      .ref(`customHomePageUsers/${username}/categories/${categoryKey}/webPages`);
     delete webPage.key;
     webPageRef.push(webPage, (result) => {
       if (result === null) {
@@ -95,7 +95,7 @@ export const addNewWebPage = (username, categoryKey, webPage) => {
 export const updateWebPage = (username, categoryKey, webPage) => {
   const categoryRef = firebase
     .database()
-    .ref(`${username}/categories/${categoryKey}/webPages/${webPage.key}`);
+    .ref(`customHomePageUsers/${username}/categories/${categoryKey}/webPages/${webPage.key}`);
   return categoryRef.update({
     url: webPage.url,
     icon: webPage.icon,
@@ -108,14 +108,14 @@ export const deleteWebPage = (username, categoryKey, webPage) => {
   if (window.confirm("¿Seguro que quieres eliminar esta web?")) {
     const categoryRef = firebase
       .database()
-      .ref(`${username}/categories/${categoryKey}/webPages/${webPage.key}`);
+      .ref(`customHomePageUsers/${username}/categories/${categoryKey}/webPages/${webPage.key}`);
     return categoryRef.remove();
   }
 };
 
 export const addNewCategory = (userName, category) => {
   var promise = new Promise((resolve, reject) => {
-    const categoriesRef = firebase.database().ref(`${userName}/categories`);
+    const categoriesRef = firebase.database().ref(`customHomePageUsers/${userName}/categories`);
     delete category.key;
     categoriesRef.push(category, (result) => {
       if (result === null) {
@@ -131,7 +131,7 @@ export const addNewCategory = (userName, category) => {
 export const updateCategory = (userName, category) => {
   const categoryRef = firebase
     .database()
-    .ref(`${userName}/categories/${category.key}`);
+    .ref(`customHomePageUsers/${userName}/categories/${category.key}`);
   return categoryRef.update({
     title: category.title,
     order: category.order,
@@ -142,13 +142,13 @@ export const deleteCategory = (userName, category) => {
   if (window.confirm("¿Seguro que quieres eliminar este grupo y todas sus webs?")) {
     const categoryRef = firebase
       .database()
-      .ref(`${userName}/categories/${category.key}`);
+      .ref(`customHomePageUsers/${userName}/categories/${category.key}`);
     return categoryRef.remove();
   }
 };
 
 export const getTwitchData = (userName, setTwitchUser, setShowTwitch) => {
-  const twitchRef = firebase.database().ref(`${userName}/twitch`);
+  const twitchRef = firebase.database().ref(`customHomePageUsers/${userName}/twitch`);
   twitchRef.on("value", (snapshot) => {
     if(snapshot.val()){
       setTwitchUser(snapshot.val().user);
@@ -158,7 +158,7 @@ export const getTwitchData = (userName, setTwitchUser, setShowTwitch) => {
 };
 
 export const setTwitchData = (userName, twitchUser, showTwitch) => {
-  const twitchRef = firebase.database().ref(`${userName}/twitch`);
+  const twitchRef = firebase.database().ref(`customHomePageUsers/${userName}/twitch`);
   twitchRef.set({
     user: twitchUser,
     showTwitch: showTwitch,
